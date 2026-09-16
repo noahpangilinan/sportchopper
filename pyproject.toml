@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sportchopper"
+version = "0.1.0"
+description = "Automatically cut the dead time between points out of volleyball/tennis/pickleball footage."
+requires-python = ">=3.9"
+dependencies = [
+    "ultralytics>=8.2.0",
+    "opencv-python>=4.10.0",
+    "numpy>=1.26",
+    "imageio-ffmpeg>=0.5.1",
+    "matplotlib>=3.8",
+    "tqdm>=4.66",
+]
+
+[project.scripts]
+sportchopper = "sportchopper.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]

@@ -1,0 +1,23 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+*.egg-info/
+build/
+dist/
+
+# model weights auto-downloaded by ultralytics
+*.pt
+
+# user test footage / generated output
+sample_data/
+*.mp4
+*.mov
+*.mkv
+*.avi
+debug_activity.png
+
+.pytest_cache/
+.mypy_cache/
+.vscode/
+.idea/
