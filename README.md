@@ -28,6 +28,14 @@ No separate ffmpeg install is required — `imageio-ffmpeg` bundles a binary tha
 sportchopper chop path\to\match.mp4 -o highlights.mp4 --sport volleyball
 ```
 
+If you omit the input path, a native file picker opens so you can browse to a video instead:
+
+```powershell
+sportchopper chop --sport volleyball
+```
+
+> **Note on phone-connected videos:** if you pick a file from a phone shown under "This PC" (an MTP device, not a real drive letter), Windows' file dialog can only materialize a small preview stub for large files rather than the full video, so processing will fail on a truncated file. Copy the video to local disk first (drag it out in File Explorer, or use your phone's photo-sync app) and pick the local copy instead.
+
 Useful flags:
 
 - `--sport {volleyball,tennis,pickleball}` — selects the tuned preset (volleyball is the only one validated so far).

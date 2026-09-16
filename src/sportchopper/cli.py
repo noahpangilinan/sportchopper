@@ -42,6 +42,32 @@ def _analyze(
     return info, timestamps, scores
 
 
+def _pick_input_file() -> Optional[str]:
+    """Open a native file picker so the user can browse to a video instead of
+    typing a path. Note: for videos still on a phone (MTP device under 'This
+    PC'), Windows' file dialog can only materialize a small preview stub for
+    large files rather than the full video - copy the file to local disk
+    first (e.g. drag it out in File Explorer) if the picked file ends up
+    truncated."""
+    import tkinter as tk
+    from tkinter import filedialog
+
+    root = tk.Tk()
+    root.withdraw()
+    root.attributes("-topmost", True)
+    try:
+        path = filedialog.askopenfilename(
+            title="Select a video to chop",
+            filetypes=[
+                ("Video files", "*.mp4 *.mov *.mkv *.avi *.m4v"),
+                ("All files", "*.*"),
+            ],
+        )
+    finally:
+        root.destroy()
+    return path or None
+
+
 def _save_debug_plot(
     timestamps: List[float],
     scores: List[float],
@@ -73,7 +99,12 @@ def main(argv: Optional[List[str]] = None) -> int:
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     chop = subparsers.add_parser("chop", help="Cut dead time between points out of a video")
-    chop.add_argument("input", help="Path to source video")
+    chop.add_argument(
+        "input",
+        nargs="?",
+        default=None,
+        help="Path to source video (opens a file picker if omitted)",
+    )
     chop.add_argument("-o", "--output", default="output.mp4", help="Path to write the trimmed video")
     chop.add_argument("--sport", default="volleyball", choices=["volleyball", "tennis", "pickleball"])
     chop.add_argument("--sample-fps", type=float, default=None, help="Override analysis frame rate")
@@ -86,6 +117,11 @@ def main(argv: Optional[List[str]] = None) -> int:
 
     args = parser.parse_args(argv)
 
+    input_path = args.input or _pick_input_file()
+    if not input_path:
+        print("No input video selected.", file=sys.stderr)
+        return 1
+
     preset = get_preset(args.sport)
     if args.sample_fps is not None:
         preset.sample_fps = args.sample_fps
@@ -96,7 +132,7 @@ def main(argv: Optional[List[str]] = None) -> int:
     if args.pad is not None:
         preset.pad = args.pad
 
-    info, timestamps, scores = _analyze(args.input, preset, args.conf)
+    info, timestamps, scores = _analyze(input_path, preset, args.conf)
 
     segments = build_segments(
         timestamps=timestamps,
@@ -126,7 +162,7 @@ def main(argv: Optional[List[str]] = None) -> int:
         print(json.dumps([{"start": s.start, "end": s.end} for s in segments], indent=2))
         return 0
 
-    cut_and_concat(args.input, segments, args.output)
+    cut_and_concat(input_path, segments, args.output)
     print(f"Wrote {args.output}")
     return 0
 
