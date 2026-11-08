@@ -14,6 +14,8 @@ This is a heuristic v1: thresholds are tuned per sport in [`config.py`](src/spor
 
 ## Setup
 
+Needs Python 3.9 or later.
+
 ```powershell
 python -m venv .venv
 .venv\Scripts\activate
@@ -28,7 +30,7 @@ No separate ffmpeg install is required — `imageio-ffmpeg` bundles a binary tha
 sportchopper chop path\to\match.mp4 -o highlights.mp4 --sport volleyball
 ```
 
-If you omit the input path, a native file picker opens so you can browse to a video instead:
+Without `-o`, the result is written to `output.mp4`. If you omit the input path, a native file picker opens so you can browse to a video instead:
 
 ```powershell
 sportchopper chop --sport volleyball
